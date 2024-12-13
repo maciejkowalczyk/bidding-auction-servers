@@ -43,12 +43,6 @@ resource "google_compute_subnetwork" "proxy_subnets" {
   }
 }
 
-# Frontend address, used for frontend service LB only
-resource "google_compute_global_address" "frontend" {
-  name       = "${var.operator}-${var.environment}-${var.frontend_service}-lb"
-  ip_version = "IPV4"
-}
-
 resource "google_network_services_mesh" "default" {
   provider = google-beta
   name     = "${var.operator}-${var.environment}-mesh"

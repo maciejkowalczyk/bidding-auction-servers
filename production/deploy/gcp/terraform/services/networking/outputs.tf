@@ -28,10 +28,6 @@ output "proxy_subnets" {
   value       = google_compute_subnetwork.proxy_subnets
 }
 
-output "frontend_address" {
-  value = google_compute_global_address.frontend.address
-}
-
 output "mesh" {
   value = google_network_services_mesh.default
 }

@@ -15,7 +15,3 @@
 output "google_compute_backend_service_id" {
   value = module.load_balancing.google_compute_backend_service_id
 }
-
-output "frontend_address" {
-  value = module.networking.frontend_address
-}

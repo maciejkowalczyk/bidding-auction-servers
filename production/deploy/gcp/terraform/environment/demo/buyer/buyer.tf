@@ -236,11 +236,16 @@ module "buyer" {
   enable_tee_container_log_redirect = false
 }
 
+resource "google_compute_global_address" "xlb" {
+  name       = "${local.buyer_operator}-${local.environment}-xlb"
+  ip_version = "IPV4"
+}
+
 module "buyer_frontend_load_balancing" {
   source               = "../../services/frontend_load_balancing"
   environment          = local.environment
   operator             = local.buyer_operator
-  frontend_ip_address  = module.buyer[local.environment].frontend_address
+  frontend_ip_address  = google_compute_global_address.xlb.address
   frontend_domain_name = local.buyer_domain_name
   frontend_dns_zone    = local.frontend_dns_zone
 
