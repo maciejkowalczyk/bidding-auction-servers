@@ -167,6 +167,7 @@ absl::StatusOr<TrustedServersConfigClient> GetConfigClient(
                         PRIVATE_KEY_CACHE_TTL_SECONDS);
   config_client.SetFlag(FLAGS_key_refresh_flow_run_frequency_seconds,
                         KEY_REFRESH_FLOW_RUN_FREQUENCY_SECONDS);
+  config_client.SetFlag(FLAGS_collector_endpoint, COLLECTOR_ENDPOINT);
   config_client.SetFlag(FLAGS_telemetry_config, TELEMETRY_CONFIG);
   config_client.SetFlag(FLAGS_consented_debug_token, CONSENTED_DEBUG_TOKEN);
   config_client.SetFlag(FLAGS_enable_otel_based_logging,

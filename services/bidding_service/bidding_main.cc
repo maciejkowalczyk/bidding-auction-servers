@@ -170,6 +170,7 @@ absl::StatusOr<TrustedServersConfigClient> GetConfigClient(
                         PRIVATE_KEY_CACHE_TTL_SECONDS);
   config_client.SetFlag(FLAGS_key_refresh_flow_run_frequency_seconds,
                         KEY_REFRESH_FLOW_RUN_FREQUENCY_SECONDS);
+  config_client.SetFlag(FLAGS_collector_endpoint, COLLECTOR_ENDPOINT);
   config_client.SetFlag(FLAGS_telemetry_config, TELEMETRY_CONFIG);
   config_client.SetFlag(FLAGS_buyer_code_fetch_config, BUYER_CODE_FETCH_CONFIG);
   config_client.SetFlag(FLAGS_egress_schema_fetch_config,
