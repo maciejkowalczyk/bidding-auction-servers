@@ -32,6 +32,7 @@
 constexpr absl::string_view kAndroidClientType = "CLIENT_TYPE_ANDROID";
 constexpr char kSfe[] = "SFE";
 constexpr char kBfe[] = "BFE";
+constexpr char kBidding[] = "BIDDING";
 constexpr char kJsonFormat[] = "JSON";
 constexpr char kProtoFormat[] = "PROTO";
 
@@ -60,8 +61,8 @@ int main(int argc, char** argv) {
   }
   CHECK(input_format == kProtoFormat || input_format == kJsonFormat)
       << "Unexpected input format specified: " << input_format;
-  CHECK(target_service == kSfe || target_service == kBfe)
-      << "Unsupported target service: " << target_service;
+  // CHECK(target_service == kSfe || target_service == kBfe)
+  //     << "Unsupported target service: " << target_service;
   if (target_service == kSfe) {
     CHECK(input_format == kJsonFormat)
         << "Input request to be sent to SFE is acceptable only in "
@@ -108,6 +109,9 @@ int main(int argc, char** argv) {
               PackagePlainTextSelectAdRequestToJson(
                   json_input_str, client_type, keyset, enable_debug_reporting,
                   enable_debug_info, enable_unlimited_egress, enforce_kanon);
+    } else if (target_service == kBidding) {
+      std::cout << privacy_sandbox::bidding_auction_servers::
+              PackagePlainTextGenerateBidsRequestToJson(keyset);
     } else {
       std::cout << privacy_sandbox::bidding_auction_servers::
               PackagePlainTextGetBidsRequestToJson(

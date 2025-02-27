@@ -344,6 +344,31 @@ GetBidsRequest::GetBidsRawRequest GetBidsRawRequestFromInput(
   return get_bids_raw_request;
 }
 
+GenerateBidsRequest::GenerateBidsRawRequest GenerateBidsRawRequestFromInput() {
+  std::string raw_generate_bids_request_str = absl::GetFlag(FLAGS_json_input_str);
+  const bool is_json = (!raw_generate_bids_request_str.empty() ||
+                        absl::GetFlag(FLAGS_input_format) == kJsonFormat);
+  GenerateBidsRequest::GenerateBidsRawRequest generate_bids_raw_request;
+  if (is_json) {
+    if (raw_generate_bids_request_str.empty()) {
+      raw_generate_bids_request_str = LoadFile(absl::GetFlag(FLAGS_input_file));
+    }
+    auto result = google::protobuf::util::JsonStringToMessage(
+        raw_generate_bids_request_str, &generate_bids_raw_request);
+    CHECK(result.ok())
+        << "Failed to convert the provided raw request JSON to proto "
+        << "(Is the input malformed?). Input:\n"
+        << raw_generate_bids_request_str << "\nError:\n:" << result;
+  } else {
+    raw_generate_bids_request_str = LoadFile(absl::GetFlag(FLAGS_input_file));
+    CHECK(google::protobuf::TextFormat::ParseFromString(
+        raw_generate_bids_request_str, &generate_bids_raw_request))
+        << "Failed to create proto object from the input file. Input:\n"
+        << raw_generate_bids_request_str;
+  }
+  return generate_bids_raw_request;
+}
+
 std::string PackagePlainTextGetBidsRequestToJson(
     const HpkeKeyset& keyset, std::optional<bool> enable_debug_reporting,
     std::optional<bool> enable_unlimited_egress) {
@@ -364,6 +389,25 @@ std::string PackagePlainTextGetBidsRequestToJson(
                                                   &get_bids_request_json);
   CHECK(get_bids_request_json_status.ok()) << get_bids_request_json_status;
   return get_bids_request_json;
+}
+
+std::string PackagePlainTextGenerateBidsRequestToJson(const HpkeKeyset& keyset) {
+  GenerateBidsRequest::GenerateBidsRawRequest generate_bids_raw_request =
+      GenerateBidsRawRequestFromInput();
+  auto key_fetcher_manager =
+      std::make_unique<server_common::FakeKeyFetcherManager>(
+          keyset.public_key, "unused", std::to_string(keyset.key_id));
+  auto crypto_client = CreateCryptoClient();
+  auto secret_request = EncryptRequestWithHpke<GenerateBidsRequest>(
+      generate_bids_raw_request.SerializeAsString(), *crypto_client,
+      *key_fetcher_manager, server_common::CloudPlatform::kGcp);
+  CHECK(secret_request.ok()) << secret_request.status();
+  std::string generate_bids_request_json;
+  auto generate_bids_request_json_status =
+      google::protobuf::util::MessageToJsonString(*secret_request->second,
+                                                  &generate_bids_request_json);
+  CHECK(generate_bids_request_json_status.ok()) << generate_bids_request_json_status;
+  return generate_bids_request_json;
 }
 
 absl::Status SendRequestToBfe(
