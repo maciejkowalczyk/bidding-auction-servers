@@ -60,6 +60,9 @@ std::string PackagePlainTextGetBidsRequestToJson(
     const HpkeKeyset& keyset, std::optional<bool> enable_debug_reporting,
     std::optional<bool> enable_unlimited_egress);
 
+
+std::string PackagePlainTextGenerateBidsRequestToJson(const HpkeKeyset& keyset);
+
 }  // namespace privacy_sandbox::bidding_auction_servers
 
 #endif  // TOOLS_INVOKE_SECURE_INVOKE_LIB_H_
